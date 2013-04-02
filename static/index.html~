@@ -93,19 +93,21 @@
 				var sourceNode = data.rslt.o[0];
 				var newNode = data.rslt.oc[0];
 
+				newNode.id = 'node' + ++nodeCount;
+
 				for (var childIndex = 0; childIndex < newNode.parentElement.children.length; ++childIndex) {			
 					if (newNode.parentElement.children[childIndex] == newNode) {
 						break;
 					}
 				}
 
-				if (treeHtmlElementsToTocnodes[parentOfNewNode].children === undefined) {
-					treeHtmlElementsToTocnodes[parentOfNewNode].children = [];	
+				if (treeHtmlElementsToTocnodes[parentOfNewNode.id].children === undefined) {
+					treeHtmlElementsToTocnodes[parentOfNewNode.id].children = [];	
 				}
 				
 				var newTocElement = {name: newNode.innerText.trim()};
-				treeHtmlElementsToTocnodes[parentOfNewNode].children.splice(childIndex, 0, newTocElement);
-				treeHtmlElementsToTocnodes[newNode] = newTocElement;
+				treeHtmlElementsToTocnodes[parentOfNewNode.id].children.splice(childIndex, 0, newTocElement);
+				treeHtmlElementsToTocnodes[newNode.id] = newTocElement;
 
 				
 			});
@@ -122,7 +124,7 @@
 					listItem.append(href);
 					listItem.append(unorderedList);
 				
-					treeHtmlElementsToTocnodes[listItem[0]] = child.children[i];
+					treeHtmlElementsToTocnodes[listItem[0].id] = child.children[i];
 
 					addChild(unorderedList, child.children[i]);
 				});
