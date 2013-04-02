@@ -59,12 +59,27 @@
 		});
 		
 		jQuery("#toc").jstree({
-			"crrm": { "move": { "always_copy": "multitree" } },
+			"crrm": { 
+				"move": { 
+					"always_copy": "multitree"
+				}				
+			},
 			"dnd" : {
-		            "drop_target" : false,
-		            "drag_target" : false
+				"drop_target" : false,
+				"drag_target" : false
 			},
 			plugins : [ "themes", "html_data", "crrm", "dnd" ]
+		}).bind('move_node.jstree',function(event,data){
+
+			console.log(event);
+			console.log(data); 
+		    	console.log('the item being dragged '+ data.rslt.o[0].id + 'target '+ data.rslt.np[0].id);
+			
+			//lets assume we want to roll back
+		    	/*
+		    		jQuery.jstree.rollback(data.rlbk);
+		    		alert('this move is not allowed');
+		    	*/    
 		});
 
             });
