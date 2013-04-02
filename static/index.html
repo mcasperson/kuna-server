@@ -30,69 +30,102 @@
 	</div>
 
         <script>
-            // connect to the server
-            sharejs.open('book1', 'json', function(error, doc) {
-                // this function is called once the connection is opened
-                if (error) {
-			console.log("ERROR:", error);
-			return;
-                }
-		
-		var toc = doc.get();
-
-		if (toc == null) {
-			toc = {children: [{name: "Book"}]};			
-		}
-
-		addChild(jQuery('#tocTopLevel'), toc);	
-
-		doc.on('child op', function (path, op) {
-		  	if (op == 'add') {
-
-			} else if (op == 'move') {
-
+		var treeHtmlElementsToTocnodes = {}; 
+		var nodeCount = 0;
+	
+		// connect to the server
+	        sharejs.open('book1', 'json', function(error, doc) {
+			// this function is called once the connection is opened
+			if (error) {
+				console.log("ERROR:", error);
+				return;
 			}
-		});
 
-		jQuery("#toc-items").jstree({				
-			plugins : [ "themes", "html_data", "dnd" ]
-		});
-		
-		jQuery("#toc").jstree({
-			"crrm": { 
-				"move": { 
-					"always_copy": "multitree"
-				}				
-			},
-			"dnd" : {
-				"drop_target" : false,
-				"drag_target" : false
-			},
-			plugins : [ "themes", "html_data", "crrm", "dnd" ]
-		}).bind('move_node.jstree',function(event,data){
+			var toc = doc.get();
 
-			console.log(event);
-			console.log(data); 
-		    	console.log('the item being dragged '+ data.rslt.o[0].id + 'target '+ data.rslt.np[0].id + ' source ' + data.rslt.op[0].id);
-			
-			//lets assume we want to roll back
-		    	/*
-		    		jQuery.jstree.rollback(data.rlbk);
-		    		alert('this move is not allowed');
-		    	*/    
-		});
+			if (toc == null) {
+				toc = {children: [{name: "Book"}]};			
+			}
 
-            });
+			addChild(jQuery('#tocTopLevel'), toc);	
+
+			doc.on('child op', function (path, op) {
+			  	if (op == 'add') {
+
+				} else if (op == 'move') {
+
+				}
+			});
+
+			jQuery("#toc-items").jstree({				
+				plugins : [ "themes", "html_data", "dnd" ]
+			});
+
+			jQuery("#toc").jstree({
+				"crrm": { 
+					"move": { 
+						"always_copy": "multitree"
+					}				
+				},
+				"dnd" : {
+					"drop_target" : false,
+					"drag_target" : false
+				},
+				plugins : [ "themes", "html_data", "crrm", "dnd" ]
+			}).bind('move_node.jstree',function(event,data){
+
+				console.log(event);
+				console.log(data); 
+			    	console.log('the item being dragged '+ data.rslt.o[0].id + 'target '+ data.rslt.np[0].id + ' source ' + data.rslt.op[0].id);
+
+				//lets assume we want to roll back
+			    	/*
+			    		jQuery.jstree.rollback(data.rlbk);
+			    		alert('this move is not allowed');
+			    	*/    
+
+				/*
+					If the source is toc-items, we have just copied a new element into the toc.
+					Issue an add operation to the OT server.
+				*/
+
+				var parentOfNewNode = data.rslt.np[0];
+				var sourceNode = data.rslt.o[0];
+				var newNode = data.rslt.oc[0];
+
+				newNode.id = 'node' + ++nodeCount;
+
+				for (var childIndex = 0; childIndex < newNode.parentElement.children.length; ++childIndex) {			
+					if (newNode.parentElement.children[childIndex] == newNode) {
+						break;
+					}
+				}
+
+				if (treeHtmlElementsToTocnodes[parentOfNewNode.id].children === undefined) {
+					treeHtmlElementsToTocnodes[parentOfNewNode.id].children = [];	
+				}
+				
+				var newTocElement = {name: newNode.innerText.trim()};
+				treeHtmlElementsToTocnodes[parentOfNewNode.id].children.splice(childIndex, 0, newTocElement);
+				treeHtmlElementsToTocnodes[newNode.id] = newTocElement;
+
+				
+			});
+
+		});
 
 		function addChild(parent, child) {
 			if (child != null && child.children != null) {
 				jQuery.each(child.children, function(i, tocElement) {								
-					var listItem = jQuery('<li>');
+					var listItem = jQuery('<li id="node' + ++nodeCount + '">');
 					var href = jQuery('<a href="#">').text(child.children[i].name);
 					var unorderedList = jQuery('<ul>');
 					parent.append(listItem);
 					listItem.append(href);
 					listItem.append(unorderedList);
+				
+					treeHtmlElementsToTocnodes[listItem[0].id] = child.children[i];
+
 					addChild(unorderedList, child.children[i]);
 				});
 			}		
