@@ -1,17 +1,14 @@
 <html>
     <head>
         <title>ShareJS Tutorial</title>
-        <!-- NEW -->
         <script src="bcsocket.js"></script>             <!-- add transport -->
         <script src="webclient/share.js"></script>      <!-- ShareJS -->
-        <script src="webclient/textarea.js"></script>   <!-- helper to attach textarea to ShareJS server -->
+	<script src="webclient/json.js"></script>
 	<script type="text/javascript" src="jstree-v.pre1.0/_lib/jquery.js"></script>
 	<script type="text/javascript" src="jstree-v.pre1.0/jquery.jstree.js"></script>
-        <!-- /NEW -->
     </head>
     <body>
-        <h1>ShareJS Tutorial</h1>
-        <textarea id='sharetext' ></textarea>
+	<h3>TOC Elements</h3>
 	<div id="toc-items">
 		<ul>
 			<li>
@@ -25,46 +22,66 @@
 			</li>
 		</ul>
 	</div>
+	<h3>TOC</h3>
 	<div id="toc">
-		<ul>
-			<li id="phtml_1">
-				<a href="#">Chapter 1</a>
-			</li>
-			<li id="phtml_4">
-				<a href="#">Chapter 2</a>
-			</li>
+		<ul id="tocTopLevel">
+
 		</ul>
 	</div>
-        <!-- NEW -->
+
         <script>
-            // get the textarea element 
-            var elem = document.getElementById("sharetext");
             // connect to the server
-            var connection = sharejs.open('test', 'text', function(error, doc) {
+            sharejs.open('book1', 'json', function(error, doc) {
                 // this function is called once the connection is opened
                 if (error) {
-                    console.log("ERROR:", error);
-                } else {
-                    // attach the ShareJS document to the textarea
-                    doc.attach_textarea(elem);
+			console.log("ERROR:", error);
+			return;
                 }
+		
+		var toc = doc.get();
+
+		if (toc == null) {
+			toc = {children: [{name: "Book"}]};			
+		}
+
+		addChild(jQuery('#tocTopLevel'), toc);	
+
+		doc.on('child op', function (path, op) {
+		  	if (op == 'add') {
+
+			} else if (op == 'move') {
+
+			}
+		});
+
+		jQuery("#toc-items").jstree({				
+			plugins : [ "themes", "html_data", "dnd" ]
+		});
+		
+		jQuery("#toc").jstree({
+			"crrm": { "move": { "always_copy": "multitree" } },
+			"dnd" : {
+		            "drop_target" : false,
+		            "drag_target" : false
+			},
+			plugins : [ "themes", "html_data", "crrm", "dnd" ]
+		});
+
             });
 
-		jQuery("#toc-items").jstree(
-			{				
-				"dnd" : {
-			            "drop_target" : false,
-			            "drag_target" : false
-				},
-				plugins : [ "themes", "html_data", "dnd" ]
-			});
-		
-		jQuery("#toc").jstree(
-			{
-				"crrm": { "move": { "always_copy": "multitree" } },
-				plugins : [ "themes", "html_data", "crrm", "dnd" ]
-			});
+		function addChild(parent, child) {
+			if (child != null && child.children != null) {
+				jQuery.each(child.children, function(i, tocElement) {								
+					var listItem = jQuery('<li>');
+					var href = jQuery('<a href="#">').text(child.children[i].name);
+					var unorderedList = jQuery('<ul>');
+					parent.append(listItem);
+					listItem.append(href);
+					listItem.append(unorderedList);
+					addChild(unorderedList, child.children[i]);
+				});
+			}		
+		}
         </script>
-        <!-- /NEW -->
     </body>
 </html>
