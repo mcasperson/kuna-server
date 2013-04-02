@@ -23,11 +23,6 @@
 		</ul>
 	</div>
 	<h3>TOC</h3>
-	<div id="toc">
-		<ul id="tocTopLevel">
-
-		</ul>
-	</div>
 
         <script>
 		var treeHtmlElementsToTocnodes = {}; 
@@ -41,22 +36,66 @@
 				return;
 			}
 
+			if (doc.get() == null) {
+				doc.set({children: [{name: "Book", children: []}]});
+			} 			
+
 			var toc = doc.get();
 
-			if (toc == null) {
-				doc.set({children: [{name: "Book", children: []}]});
-			} 
-
+			buildTree();
 			addChild(jQuery('#tocTopLevel'), toc);	
+			buildJSTree(toc);
 
-			doc.on('child op', function (path, op) {
-			  	if (op == 'add') {
-
-				} else if (op == 'move') {
-
-				}
+			doc.at().on('child op', function (path, op) {
+				toc = doc.get();
+				treeHtmlElementsToTocnodes = {};
+				buildTree();
+				addChild(jQuery('#tocTopLevel'), toc);	
+				buildJSTree(toc);
 			});
 
+			
+
+		});
+
+		function buildPath(child, parent, parents) {
+			
+			for (var i = 0; i < parent.children.length; ++i) {
+				if (parent.children[i] == child) {
+
+					var path = [];
+
+					jQuery.each(parents, function(i, parentIndex) {	
+						path.push('children', parentIndex);
+					});
+					path.push('children', i);
+					return path;
+
+				}
+			};
+
+			for (var i = 0; i < parent.children.length; ++i) {	
+				parents.push(i);				
+				var retValue = buildPath(child, parent.children[i], parents);
+				if (retValue != null) {
+					return retValue;
+				}
+				parents.pop();
+			};
+
+			return null;
+		}
+
+		function buildTree() {
+			jQuery('#toc').remove();
+			var toc = jQuery('<div id="toc">');
+			var tocTopLevel = jQuery('<ul id="tocTopLevel">');
+			toc.append(tocTopLevel);
+			jQuery('body').append(toc);
+
+		}
+
+		function buildJSTree(toc) {
 			jQuery("#toc-items").jstree({				
 				plugins : [ "themes", "html_data", "dnd" ]
 			});
@@ -110,43 +149,13 @@
 					var pathDetails = buildPath(treeHtmlElementsToTocnodes[parentOfNewNode.id], toc, []);
 
 					// notify the OT server
-					pathDetails.push(['children']);
-					//pathDetails = ['children'];
+					pathDetails.push('children');
 					
 					var subDoc = doc.at(pathDetails);
 					var subDocToc = subDoc.get();
 					subDoc.insert(pathDetails.childIndex, newTocElement);
 				}				
 			});
-
-		});
-
-		function buildPath(child, parent, parents) {
-			
-			for (var i = 0; i < parent.children.length; ++i) {
-				if (parent.children[i] == child) {
-
-					var path = [];
-
-					jQuery.each(parents, function(i, parentIndex) {	
-						path.push('children', parentIndex);
-					});
-					path.push('children', i);
-					return path;
-
-				}
-			};
-
-			for (var i = 0; i < parent.children.length; ++i) {	
-				parents.push(i);				
-				var retValue = buildPath(child, parent.children[i], parents);
-				if (retValue != null) {
-					return retValue;
-				}
-				parents.pop();
-			};
-
-			return null;
 		}
 
 		function addChild(parent, child) {
