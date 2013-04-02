@@ -34,7 +34,7 @@
 		var nodeCount = 0;
 	
 		// connect to the server
-	        sharejs.open('book1', 'json', function(error, doc) {
+	        sharejs.open('book2', 'json', function(error, doc) {
 			// this function is called once the connection is opened
 			if (error) {
 				console.log("ERROR:", error);
@@ -44,8 +44,8 @@
 			var toc = doc.get();
 
 			if (toc == null) {
-				toc = {children: [{name: "Book"}]};			
-			}
+				doc.set({children: [{name: "Book"}]});
+			} 
 
 			addChild(jQuery('#tocTopLevel'), toc);	
 
@@ -93,23 +93,36 @@
 				var sourceNode = data.rslt.o[0];
 				var newNode = data.rslt.oc[0];
 
-				newNode.id = 'node' + ++nodeCount;
+				if (sourceNode.parentElement.parentElement == jQuery("#toc-items")[0]) {
 
-				for (var childIndex = 0; childIndex < newNode.parentElement.children.length; ++childIndex) {			
-					if (newNode.parentElement.children[childIndex] == newNode) {
-						break;
+					newNode.id = 'node' + ++nodeCount;
+
+					for (var childIndex = 0; childIndex < newNode.parentElement.children.length; ++childIndex) {			
+						if (newNode.parentElement.children[childIndex] == newNode) {
+							break;
+						}
 					}
-				}
 
-				if (treeHtmlElementsToTocnodes[parentOfNewNode.id].children === undefined) {
-					treeHtmlElementsToTocnodes[parentOfNewNode.id].children = [];	
-				}
+					if (treeHtmlElementsToTocnodes[parentOfNewNode.id].children === undefined) {
+						treeHtmlElementsToTocnodes[parentOfNewNode.id].children = [];	
+					}
 				
-				var newTocElement = {name: newNode.innerText.trim()};
-				treeHtmlElementsToTocnodes[parentOfNewNode.id].children.splice(childIndex, 0, newTocElement);
-				treeHtmlElementsToTocnodes[newNode.id] = newTocElement;
+					/*var newTocElement = {name: newNode.innerText.trim(), parent: treeHtmlElementsToTocnodes[parentOfNewNode.id], index: childIndex};
+					treeHtmlElementsToTocnodes[parentOfNewNode.id].children.splice(childIndex, 0, newTocElement);
+					treeHtmlElementsToTocnodes[newNode.id] = newTocElement;
 
-				
+					// notify the OT server
+					var path = ['children'];
+					var currentTocElemnt = newTocElement.parent;
+					while (currentTocElemnt != null) {
+						path.splice(0, 0, ['children', currentTocElemnt.index]);
+						currentTocElemnt = currentTocElemnt.parent;	
+					}
+
+					var subdoc = doc.at(path);
+					var subDocToc = subdoc.get();
+					subDoc.insert(newTocElement.index, {name: newNode.innerText.trim()});*/
+				}				
 			});
 
 		});
