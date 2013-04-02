@@ -40,22 +40,11 @@
 				doc.set({children: [{name: "Book", children: []}]});
 			} 			
 
-			var toc = doc.get();
-
-			buildTree();
-			addChild(jQuery('#tocTopLevel'), toc);	
-			buildJSTree(toc, doc);
+			buildAndPopulateTree(doc);
 
 			doc.at().on('child op', function (path, op) {
-				toc = doc.get();
-				treeHtmlElementsToTocnodes = {};
-				buildTree();
-				addChild(jQuery('#tocTopLevel'), toc);	
-				buildJSTree(toc, doc);
+				buildAndPopulateTree(doc);
 			});
-
-			
-
 		});
 
 		function buildPath(child, parent, parents) {
@@ -85,13 +74,22 @@
 
 			return null;
 		}
+		
+		function buildAndPopulateTree(doc) {
+			toc = doc.get();
+			treeHtmlElementsToTocnodes = {};
+			nodeCount = 0;
+			buildTree();
+			addChild(jQuery('#tocTopLevel'), toc);	
+			buildJSTree(toc, doc);	
+		}
 
 		function buildTree() {
 			jQuery('#toc').remove();
-			var toc = jQuery('<div id="toc">');
+			var tocElement = jQuery('<div id="toc">');
 			var tocTopLevel = jQuery('<ul id="tocTopLevel">');
-			toc.append(tocTopLevel);
-			jQuery('body').append(toc);
+			tocElement.append(tocTopLevel);
+			jQuery('body').append(tocElement);
 
 		}
 
@@ -101,6 +99,7 @@
 			});
 
 			jQuery("#toc").jstree({
+				"core" : { "initially_open" : [ "node0" ], open_parents: true },
 				"crrm": { 
 					"move": { 
 						"always_copy": "multitree"
@@ -136,7 +135,8 @@
 
 					newNode.id = 'node' + ++nodeCount;
 
-					for (var childIndex = 0; childIndex < newNode.parentElement.children.length; ++childIndex) {			
+					var childIndex = 0
+					for (childIndex; childIndex < newNode.parentElement.children.length; ++childIndex) {			
 						if (newNode.parentElement.children[childIndex] == newNode) {
 							break;
 						}
@@ -153,15 +153,22 @@
 					
 					var subDoc = doc.at(pathDetails);
 					var subDocToc = subDoc.get();
-					subDoc.insert(pathDetails.childIndex, newTocElement);
+					subDoc.insert(childIndex, newTocElement);
 				}				
+			}).bind("before.jstree", function (e, data) {
+				if(data.func === "close_node") {
+				    e.stopImmediatePropagation();
+				    return false;
+				}
+			}).bind("loaded.jstree", function (event, data) {
+				jQuery("#toc").jstree("open_all");
 			});
 		}
 
 		function addChild(parent, child) {
 			if (child != null && child.children != null) {
 				jQuery.each(child.children, function(i, tocElement) {								
-					var listItem = jQuery('<li id="node' + ++nodeCount + '">');
+					var listItem = jQuery('<li id="node' + nodeCount++ + '">');
 					var href = jQuery('<a href="#">').text(child.children[i].name);
 					var unorderedList = jQuery('<ul>');
 					parent.append(listItem);

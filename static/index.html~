@@ -44,14 +44,14 @@
 
 			buildTree();
 			addChild(jQuery('#tocTopLevel'), toc);	
-			buildJSTree(toc);
+			buildJSTree(toc, doc);
 
 			doc.at().on('child op', function (path, op) {
 				toc = doc.get();
 				treeHtmlElementsToTocnodes = {};
 				buildTree();
 				addChild(jQuery('#tocTopLevel'), toc);	
-				buildJSTree(toc);
+				buildJSTree(toc, doc);
 			});
 
 			
@@ -95,7 +95,7 @@
 
 		}
 
-		function buildJSTree(toc) {
+		function buildJSTree(toc, doc) {
 			jQuery("#toc-items").jstree({				
 				plugins : [ "themes", "html_data", "dnd" ]
 			});
