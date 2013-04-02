@@ -110,7 +110,7 @@
 					}
 				    }
 				},
-				plugins : [ "themes", "html_data", "dnd", "crrm" ]
+				plugins : [ "themes", "html_data", "dnd", "crrm", "ui" ]
 			});
 
 			jQuery("#toc").jstree({
@@ -120,7 +120,7 @@
 						"always_copy": "multitree"
 					}				
 				},
-				plugins : [ "themes", "html_data", "crrm", "dnd" ]
+				plugins : [ "themes", "html_data", "crrm", "dnd", "ui" ]
 			}).bind('move_node.jstree',function(event,data){
 
 				console.log(event);
@@ -163,7 +163,6 @@
 					pathDetails.push('children');
 					
 					var subDoc = doc.at(pathDetails);
-					var subDocToc = subDoc.get();
 					subDoc.insert(childIndex, newTocElement);
 				}				
 			}).bind("before.jstree", function (e, data) {
@@ -173,6 +172,21 @@
 				}
 			}).bind("loaded.jstree", function (event, data) {
 				jQuery("#toc").jstree("open_all");
+			}).bind("dblclick.jstree", function (event) {
+				$("#toc").jstree("rename");
+			}).bind("rename_node.jstree", function (event, data) { 			    
+				var node = data.rslt.obj[0];
+				
+				// get a path that describes the  object that changed
+				var childIndex = getChildIndex(node.parentElement, node);
+				var pathDetails = buildPath(treeHtmlElementsToTocnodes[node.parentElement.parentElement.id], toc, []);
+				pathDetails.push('children'); 
+				pathDetails.push(childIndex);				
+				pathDetails.push('name');
+				var subDoc = doc.at(pathDetails);
+				
+				// set the new title
+				subDoc.set(data.rslt.name);
 			});
 		}
 
@@ -191,6 +205,16 @@
 					addChild(unorderedList, child.children[i]);
 				});
 			}		
+		}
+		
+		function getChildIndex(parent, child) {
+			for (var childIndex = 0; childIndex < parent.children.length; ++childIndex) {			
+				if (parent.children[childIndex] == child) {
+					return childIndex;
+				}
+			}
+			
+			return null;
 		}
         </script>
     </body>
