@@ -73,7 +73,7 @@
 
 			console.log(event);
 			console.log(data); 
-		    	console.log('the item being dragged '+data.rslt.o[0].id+ 'target '+data.rslt.np[0].id);
+		    	console.log('the item being dragged '+ data.rslt.o[0].id + 'target '+ data.rslt.np[0].id);
 			
 			//lets assume we want to roll back
 		    	/*
