@@ -191,16 +191,20 @@
 			
 			jQuery(document).keydown(function (event) { 
 				if (event.keyCode == '46') {
-					var node = jQuery('#toc').jstree('get_selected')[0];
-					// get a path that describes the  object that changed
-					var childIndex = getChildIndex(node.parentElement, node);
-					var pathDetails = buildPath(treeHtmlElementsToTocnodes[node.parentElement.parentElement.id], toc, []);
-					pathDetails.push('children'); 
-					pathDetails.push(childIndex);				
-					var subDoc = doc.at(pathDetails);
-					subDoc.remove();
 					
-					$("#toc").jstree("remove");																	
+					jQuery.each(jQuery('#toc').jstree('get_selected'), function(i, tocElement) {				
+						// get a path that describes the  object that changed
+						var childIndex = getChildIndex(tocElement.parentElement, tocElement);
+						var pathDetails = buildPath(treeHtmlElementsToTocnodes[tocElement.parentElement.parentElement.id], toc, []);
+						pathDetails.push('children'); 
+						pathDetails.push(childIndex);				
+						var subDoc = doc.at(pathDetails);
+						subDoc.remove();
+						
+						$("#toc").jstree("remove", tocElement);
+					});
+
+					
 				}
 			});
 		}
