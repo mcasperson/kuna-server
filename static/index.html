@@ -120,7 +120,7 @@
 						"always_copy": "multitree"
 					}				
 				},
-				plugins : [ "themes", "html_data", "crrm", "dnd", "ui" ]
+				plugins : [ "themes", "html_data", "crrm", "dnd", "ui"]
 			}).bind('move_node.jstree',function(event,data){
 
 				console.log(event);
@@ -187,6 +187,21 @@
 				
 				// set the new title
 				subDoc.set(data.rslt.name);
+			});
+			
+			jQuery(document).keydown(function (event) { 
+				if (event.keyCode == '46') {
+					var node = jQuery('#toc').jstree('get_selected')[0];
+					// get a path that describes the  object that changed
+					var childIndex = getChildIndex(node.parentElement, node);
+					var pathDetails = buildPath(treeHtmlElementsToTocnodes[node.parentElement.parentElement.id], toc, []);
+					pathDetails.push('children'); 
+					pathDetails.push(childIndex);				
+					var subDoc = doc.at(pathDetails);
+					subDoc.remove();
+					
+					$("#toc").jstree("remove");																	
+				}
 			});
 		}
 
