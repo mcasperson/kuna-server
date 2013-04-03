@@ -37,7 +37,7 @@
 		var nodeCount = 0;
 	
 		// connect to the server
-	        sharejs.open('book3', 'json', function(error, doc) {
+	        sharejs.open('book9', 'json', function(error, doc) {
 			// this function is called once the connection is opened
 			if (error) {
 				console.log("ERROR:", error);
@@ -45,7 +45,7 @@
 			}
 
 			if (doc.get() == null) {
-				doc.set({children: [{name: "Book", children: []}]});
+				doc.set({id: 'toc', children: [{id: 'node0', name: "Book", children: []}]});
 			} 			
 
 			buildAndPopulateTree(doc);
@@ -55,10 +55,10 @@
 			});
 		});
 
-		function buildPath(child, parent, parents) {
+		function buildPath(id, parent, parents) {
 			
 			for (var i = 0; i < parent.children.length; ++i) {
-				if (parent.children[i] == child) {
+				if (parent.children[i].id == id) {
 
 					var path = [];
 
@@ -73,7 +73,7 @@
 
 			for (var i = 0; i < parent.children.length; ++i) {	
 				parents.push(i);				
-				var retValue = buildPath(child, parent.children[i], parents);
+				var retValue = buildPath(id, parent.children[i], parents);
 				if (retValue != null) {
 					return retValue;
 				}
@@ -84,12 +84,11 @@
 		}
 		
 		function buildAndPopulateTree(doc) {
-			toc = doc.get();
 			treeHtmlElementsToTocnodes = {};
-			nodeCount = 0;
+			nodeCount = getMaxNodeId(0, doc.get());
 			buildTree();
-			addChild(jQuery('#tocTopLevel'), toc);	
-			buildJSTree(toc, doc);	
+			addChild(jQuery('#tocTopLevel'), doc.get());	
+			buildJSTree(doc);	
 		}
 
 		function buildTree() {
@@ -101,7 +100,7 @@
 
 		}
 
-		function buildJSTree(toc, doc) {
+		function buildJSTree(doc) {
 			jQuery("#toc-items").jstree({		
 				"crrm" : {
 					"move" : {
@@ -117,7 +116,10 @@
 				"core" : { "initially_open" : [ "node0" ], open_parents: true },
 				"crrm": { 
 					"move": { 
-						"always_copy": "multitree"
+						"always_copy": "multitree",
+						"check_move" : function (m) {
+							return m.np[0].id != 'toc';
+						}
 					}				
 				},
 				plugins : [ "themes", "html_data", "crrm", "dnd", "ui"]
@@ -148,11 +150,10 @@
 					newNode.id = 'node' + ++nodeCount;
 
 					var childIndex = getChildIndex(newNode.parentElement, newNode);			
-					var newTocElement = {name: newNode.innerText.trim(), children: []};
-					treeHtmlElementsToTocnodes[parentOfNewNode.id].children.splice(childIndex, 0, newTocElement);
-					treeHtmlElementsToTocnodes[newNode.id] = newTocElement;
+					var newTocElement = {id: newNode.id, name: newNode.innerText.trim(), children: []};
+					getTocElement(parentOfNewNode.id, doc.get()).children.splice(childIndex, 0, newTocElement);
 
-					var pathDetails = buildPath(treeHtmlElementsToTocnodes[parentOfNewNode.id], toc, []);
+					var pathDetails = buildPath(parentOfNewNode.id, doc.get(), []);
 
 					// notify the OT server
 					pathDetails.push('children');
@@ -167,14 +168,14 @@
 					var oldParent = data.rslt.op[0];
 					
 					// remove source node from old parent
-					var pathDetails = buildPath(treeHtmlElementsToTocnodes[sourceNode.id], toc, []);
+					var pathDetails = buildPath(sourceNode.id, doc.get(), []);
 					var subDoc = doc.at(pathDetails);
 					var subDocToc = subDoc.get();
 					subDoc.remove();
 
 					// add source node to new parent
 					var newChildIndex = getChildIndex(sourceNode.parentElement, sourceNode);
-					var newPathDetails = buildPath(treeHtmlElementsToTocnodes[parentOfNewNode.id], toc, []);
+					var newPathDetails = buildPath(parentOfNewNode.id, doc.get(), []);
 					newPathDetails.push('children');					
 					var newSubDoc = doc.at(newPathDetails);
 					newSubDoc.insert(newChildIndex, subDocToc);
@@ -209,7 +210,7 @@
 				
 				// get a path that describes the  object that changed
 				var childIndex = getChildIndex(node.parentElement, node);
-				var pathDetails = buildPath(treeHtmlElementsToTocnodes[node.parentElement.parentElement.id], toc, []);
+				var pathDetails = buildPath(node.parentElement.parentElement.id, doc.get(), []);
 				pathDetails.push('children'); 
 				pathDetails.push(childIndex);				
 				pathDetails.push('name');
@@ -228,13 +229,11 @@
 					jQuery.each(jQuery('#toc').jstree('get_selected'), function(i, tocElement) {				
 						// get a path that describes the  object that changed
 						var childIndex = getChildIndex(tocElement.parentElement, tocElement);
-						var pathDetails = buildPath(treeHtmlElementsToTocnodes[tocElement.parentElement.parentElement.id], toc, []);
+						var pathDetails = buildPath(tocElement.parentElement.parentElement.id, doc.get(), []);
 						pathDetails.push('children'); 
 						pathDetails.push(childIndex);				
 						var subDoc = doc.at(pathDetails);
 						subDoc.remove();
-						
-						delete treeHtmlElementsToTocnodes[tocElement.id];
 						
 						$("#toc").jstree("remove", tocElement);												
 					});
@@ -247,7 +246,7 @@
 		function addChild(parent, child) {
 			if (child != null && child.children != null) {
 				jQuery.each(child.children, function(i, tocElement) {								
-					var listItem = jQuery('<li id="node' + nodeCount++ + '">');
+					var listItem = jQuery('<li id="' + child.children[i].id + '">');
 					var href = jQuery('<a href="#">').text(child.children[i].name);
 					var unorderedList = jQuery('<ul>');
 					parent.append(listItem);
@@ -261,6 +260,21 @@
 			}		
 		}
 		
+		function getTocElement(id, toc) {
+			if (toc.id == id) {
+				return toc;
+			}
+			
+			for (var i = 0; i < toc.children.length; ++i) {
+				var retValue = getTocElement(id, toc.children[i]);
+				if (retValue != null) {
+					return retValue;
+				}
+			};
+			
+			return null;
+		}
+		
 		function getChildIndex(parent, child) {
 			for (var childIndex = 0; childIndex < parent.children.length; ++childIndex) {			
 				if (parent.children[childIndex] == child) {
@@ -269,6 +283,18 @@
 			}
 			
 			return null;
+		}
+		
+		function getMaxNodeId(maxID, toc) {
+			if (toc.id > maxID) {
+				maxID = toc.id;
+			}
+			
+			for (var childIndex = 0; childIndex < toc.children.length; ++childIndex) {			
+				maxID = getMaxNodeId(maxID, toc.children[childIndex]); 
+			}
+			
+			return maxID;
 		}
         </script>
     </body>
