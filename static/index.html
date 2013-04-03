@@ -133,17 +133,18 @@
 			    		alert('this move is not allowed');
 			    	*/    
 
+			    	
+				var parentOfNewNode = data.rslt.np[0];
+				var sourceNode = data.rslt.o[0];
+
 				/*
 					If the source is toc-items, we have just copied a new element into the toc.
 					Issue an add operation to the OT server.
 				*/
 
-				var parentOfNewNode = data.rslt.np[0];
-				var sourceNode = data.rslt.o[0];
-				var newNode = data.rslt.oc[0];
-
 				if (sourceNode.parentElement.parentElement == jQuery("#toc-items")[0]) {
-
+					var newNode = data.rslt.oc[0];
+									
 					newNode.id = 'node' + ++nodeCount;
 
 					var childIndex = getChildIndex(newNode.parentElement, newNode);			
@@ -158,6 +159,25 @@
 					
 					var subDoc = doc.at(pathDetails);
 					subDoc.insert(childIndex, newTocElement);
+				} 
+				/*
+					This is a move internally
+				*/				
+				else if (jQuery(sourceNode).closest(jQuery("#toc").length > 0)) {
+					var oldParent = data.rslt.op[0];
+					
+					// remove source node from old parent
+					var pathDetails = buildPath(treeHtmlElementsToTocnodes[sourceNode.id], toc, []);
+					var subDoc = doc.at(pathDetails);
+					var subDocToc = subDoc.get();
+					subDoc.remove();
+
+					// add source node to new parent
+					var newChildIndex = getChildIndex(sourceNode.parentElement, sourceNode);
+					var newPathDetails = buildPath(treeHtmlElementsToTocnodes[parentOfNewNode.id], toc, []);
+					newPathDetails.push('children');					
+					var newSubDoc = doc.at(newPathDetails);
+					newSubDoc.insert(newChildIndex, subDocToc);
 				}				
 			}).bind("before.jstree", function (e, data) {
 				/*
@@ -196,7 +216,7 @@
 				var subDoc = doc.at(pathDetails);
 				
 				// set the new title
-				subDoc.set(data.rslt.name);
+				subDoc.set(data.rslt.name);								
 			});
 			
 			/*
@@ -214,7 +234,9 @@
 						var subDoc = doc.at(pathDetails);
 						subDoc.remove();
 						
-						$("#toc").jstree("remove", tocElement);
+						delete treeHtmlElementsToTocnodes[tocElement.id];
+						
+						$("#toc").jstree("remove", tocElement);												
 					});
 
 					
