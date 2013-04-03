@@ -7,6 +7,7 @@
 	<script type="text/javascript" src="jstree-v.pre1.0/_lib/jquery.js"></script>
 	<script type="text/javascript" src="jstree-v.pre1.0/jquery.jstree.js"></script>
 	<style>
+		/* https://github.com/vakata/jstree/issues/174 */	
 		#jstree-marker-line {pointer-events: none;}
 	</style>
     </head>
@@ -222,6 +223,7 @@
 				if (event.keyCode == '46') {
 					
 					jQuery.each(jQuery('#toc').jstree('get_selected'), function(i, tocElement) {				
+						/* Don't delete the book folder */
 						if (tocElement.id != 'node0') {
 							// get a path that describes the  object that changed
 							var childIndex = getChildIndex(tocElement.parentElement, tocElement);
