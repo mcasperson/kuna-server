@@ -222,15 +222,17 @@
 				if (event.keyCode == '46') {
 					
 					jQuery.each(jQuery('#toc').jstree('get_selected'), function(i, tocElement) {				
-						// get a path that describes the  object that changed
-						var childIndex = getChildIndex(tocElement.parentElement, tocElement);
-						var pathDetails = buildPath(tocElement.parentElement.parentElement.id, doc.get(), []);
-						pathDetails.push('children'); 
-						pathDetails.push(childIndex);				
-						var subDoc = doc.at(pathDetails);
-						subDoc.remove();
-						
-						$("#toc").jstree("remove", tocElement);												
+						if (tocElement.id != 'node0') {
+							// get a path that describes the  object that changed
+							var childIndex = getChildIndex(tocElement.parentElement, tocElement);
+							var pathDetails = buildPath(tocElement.parentElement.parentElement.id, doc.get(), []);
+							pathDetails.push('children'); 
+							pathDetails.push(childIndex);				
+							var subDoc = doc.at(pathDetails);
+							subDoc.remove();
+							
+							$("#toc").jstree("remove", tocElement);
+						}
 					});
 
 					
