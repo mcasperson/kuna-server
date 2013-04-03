@@ -146,13 +146,7 @@
 
 					newNode.id = 'node' + ++nodeCount;
 
-					var childIndex = 0
-					for (childIndex; childIndex < newNode.parentElement.children.length; ++childIndex) {			
-						if (newNode.parentElement.children[childIndex] == newNode) {
-							break;
-						}
-					}	
-				
+					var childIndex = getChildIndex(newNode.parentElement, newNode);			
 					var newTocElement = {name: newNode.innerText.trim(), children: []};
 					treeHtmlElementsToTocnodes[parentOfNewNode.id].children.splice(childIndex, 0, newTocElement);
 					treeHtmlElementsToTocnodes[newNode.id] = newTocElement;
@@ -166,15 +160,31 @@
 					subDoc.insert(childIndex, newTocElement);
 				}				
 			}).bind("before.jstree", function (e, data) {
+				/*
+					Prevent the tree from being collapsed.
+				*/
+			
 				if(data.func === "close_node") {
 				    e.stopImmediatePropagation();
 				    return false;
 				}
 			}).bind("loaded.jstree", function (event, data) {
+				/*
+					Open the tree when it is loaded
+				*/
+			
 				jQuery("#toc").jstree("open_all");
 			}).bind("dblclick.jstree", function (event) {
+				/*
+					Rename on double click
+				*/
+			
 				$("#toc").jstree("rename");
 			}).bind("rename_node.jstree", function (event, data) { 			    
+				/*
+					Sync renames with OT server
+				*/
+			
 				var node = data.rslt.obj[0];
 				
 				// get a path that describes the  object that changed
@@ -189,6 +199,9 @@
 				subDoc.set(data.rslt.name);
 			});
 			
+			/*
+				Watch for the delete key.
+			*/
 			jQuery(document).keydown(function (event) { 
 				if (event.keyCode == '46') {
 					
