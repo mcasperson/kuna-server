@@ -10,6 +10,7 @@ function renderedElement(child) {
 		jQuery('#rendered').append(div);
 	} else if (child.type == BookElementEmun.SEContent) {
 		var text = child.seData.body;
+		var user = '<a href="' + child.seData.owner.link + '">' + child.seData.owner.display_name + '</a>';
 		if (child.seData.answers !== undefined) {
 			var accepted_answer_id = child.seData.accepted_answer_id;
 			
@@ -18,6 +19,7 @@ function renderedElement(child) {
 				jQuery.each(child.seData.answers, function(i, answer){
 					if (maxScore === undefined || answer.score > maxScore) {
 						text = answer.body;
+						user = '<a href="' + answer.owner.link + '">' + answer.display_name + '</a>';
 						maxScore = answer.score;
 					}
 				});	
@@ -25,6 +27,7 @@ function renderedElement(child) {
 				jQuery.each(child.seData.answers, function(i, answer){
 					if (answer.answer_id == accepted_answer_id) {
 						text = answer.body;
+						user = '<a href="' + answer.owner.link + '">' + answer.display_name + '</a>';
 						return false;
 					}
 				});	
@@ -35,6 +38,7 @@ function renderedElement(child) {
 			'<div id="rendered' + child.id + '">' +
 				'<h4>' + child.name + '</h4>' +
 				'<div>' + text + '</div>' +
+				'<div>' + user + '</div>' +
 			'<div>');
 		jQuery('#rendered').append(div);
 	}
