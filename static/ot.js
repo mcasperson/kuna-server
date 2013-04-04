@@ -207,7 +207,9 @@ function buildJSTree(doc) {
 			newPathDetails.push('children');					
 			var newSubDoc = doc.at(newPathDetails);
 			newSubDoc.insert(data.rslt.cp, subDocToc);
-		}				
+		}
+		
+		renderBook(doc);
 	}).bind("before.jstree", function (e, data) {
 		/*
 			Prevent the tree from being collapsed.
@@ -232,6 +234,8 @@ function buildJSTree(doc) {
 		if (sourceTocElement.type == BookElementEmun.Chapter) {		
 			$("#toc").jstree("rename");
 		}
+		
+		renderBook(doc);
 	}).bind("rename_node.jstree", function (event, data) { 			    
 		/*
 			Sync renames with OT server
@@ -248,7 +252,9 @@ function buildJSTree(doc) {
 		var subDoc = doc.at(pathDetails);
 		
 		// set the new title
-		subDoc.set(data.rslt.name);								
+		subDoc.set(data.rslt.name);
+		
+		renderBook(doc);
 	});
 	
 	/*
@@ -272,7 +278,7 @@ function buildJSTree(doc) {
 				}
 			});
 
-			
+			renderBook(doc);
 		}
 	});
 }
