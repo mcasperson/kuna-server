@@ -86,7 +86,7 @@ function buildTree() {
 
 }
 
-function buildJSTree(doc) {
+function buildJSTree(doc, scrollPos) {
 	jQuery("#toc-items").jstree({		
 		"crrm" : {
 			"move" : {
