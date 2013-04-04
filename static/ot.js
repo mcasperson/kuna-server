@@ -32,7 +32,7 @@ function start() {
 		doc.at().on('child op', function (path, op) {
 			var scrollPos = jQuery('#toc').scrollTop();
 			buildAndPopulateTree(doc);
-			jQuery('#toc').scrollTop(scrollPos)
+			setTimeout(100, function() {jQuery('#toc').scrollTop(scrollPos);});
 		});
 	});
 }
