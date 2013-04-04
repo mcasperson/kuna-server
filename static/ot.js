@@ -30,7 +30,9 @@ function start() {
 		buildAndPopulateTree(doc);
 
 		doc.at().on('child op', function (path, op) {
+			var scrollPos = jQuery('#toc').scrollTop();
 			buildAndPopulateTree(doc);
+			jQuery('#toc').scrollTop(scrollPos)
 		});
 	});
 }
