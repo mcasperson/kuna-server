@@ -19,7 +19,8 @@ server.use(connect['static'](__dirname + "/../static"));
 ShareJS.attach(server, ShareJSOpts);
 
 port = process.env.OPENSHIFT_INTERNAL_PORT || 5000;
+ip = process.env.OPENSHIFT_INTERNAL_IP || '127.0.0.1';
 
-server.listen(port, function() {
+server.listen(port, ip, function() {
   return console.log("Listening on " + port);
 });
