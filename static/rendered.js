@@ -19,7 +19,7 @@ function renderedElement(child) {
 				jQuery.each(child.seData.answers, function(i, answer){
 					if (maxScore === undefined || answer.score > maxScore) {
 						text = answer.body;
-						user += ' <a href="' + answer.link + '">Answer by</a>: <a href="' + answer.owner.link + '">' + answer.owner.display_name + '</a>';
+						user += ' <a href="' + child.seData.link + "/#" + answer.answer_id + '">Answer by</a>: <a href="' + answer.owner.link + '">' + answer.owner.display_name + '</a>';
 						maxScore = answer.score;
 					}
 				});	
@@ -27,7 +27,7 @@ function renderedElement(child) {
 				jQuery.each(child.seData.answers, function(i, answer){
 					if (answer.answer_id == accepted_answer_id) {
 						text = answer.body;
-						user += ' <a href="' + answer.link + '">Answer by</a>: <a href="' + answer.owner.link + '">' + answer.owner.display_name + '</a>';
+						user += ' <a href="' +  child.seData.link + "/#" + answer.answer_id + '">Answer by</a>: <a href="' + answer.owner.link + '">' + answer.owner.display_name + '</a>';
 						return false;
 					}
 				});	
