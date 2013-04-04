@@ -151,6 +151,12 @@ function buildJSTree(doc) {
 			subDoc.insert(childIndex, newTocElement);
 		} 
 		/*
+			This is a content node from the staging area
+		*/
+		else if (sourceNode.parentElement.parentElement == jQuery("#toc-staging")[0]) {
+			$("#toc-staging").jstree("remove", sourceNode);	
+		}
+		/*
 			This is a move internally
 		*/				
 		else if (jQuery(sourceNode).closest(jQuery("#toc").length > 0)) {
