@@ -14,7 +14,7 @@ ShareJSOpts = {
 
 server = connect.createServer();
 
-server.use(connect['static'](__dirname + "/../static"));
+server.use(connect['static'](__dirname + "/static"));
 
 ShareJS.attach(server, ShareJSOpts);
 
