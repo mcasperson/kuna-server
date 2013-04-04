@@ -2,7 +2,7 @@ BookElementEmun = {
 	TopLevel: 0,
 	Book: 1,
 	Chapter: 2,
-	SOContent: 3
+	SEContent: 3
 };
 
 function start() {
@@ -107,7 +107,14 @@ function buildJSTree(doc) {
 			"move": { 
 				"always_copy": "multitree",
 				"check_move" : function (m) {
-					return m.np[0].id != 'toc';
+					if (m.np[0].id == 'toc') {
+						return false;	
+					}
+					if (m.np[0].data !== undefined && m.np[0].data.type == BookElementEmun.SEContent && m.np[0].data.title === undefined) {
+						return false;	
+					}
+					
+					return true;
 				}
 			}				
 		},
