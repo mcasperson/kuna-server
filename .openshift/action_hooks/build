@@ -54,5 +54,8 @@ EOF
 fi
 
 cd ${OPENSHIFT_DATA_DIR}redis
-[ -f ${OPENSHIFT_RUN_DIR}redis.pid ] || ${OPENSHIFT_DATA_DIR}redis/bin/redis-server ${OPENSHIFT_DATA_DIR}redis/bin/redis.conf
+if [ ! -f ${OPENSHIFT_RUN_DIR}redis.pid ]; then
+	sed -i -e "s/^bind \([0-9]\+\.\)\{3\}[0-9]\+/bind ${OPENSHIFT_INTERNAL_IP}/1" ${OPENSHIFT_DATA_DIR}redis/bin/redis.conf
+	${OPENSHIFT_DATA_DIR}redis/bin/redis-server ${OPENSHIFT_DATA_DIR}redis/bin/redis.conf
+fi
 
