@@ -31,6 +31,33 @@ fi
 
 if [ "$MAKE_IS_DONE" == "yes" ]; then
   echo "Make is done, now create the patch"
+#  cat <<EOF >${OPENSHIFT_TMP_DIR}redis.conf.patch
+#17c17
+#< daemonize no
+#---
+#> daemonize yes
+#21,22c21
+#< pidfile /var/run/redis.pid
+#< 
+#---
+#> pidfile ${OPENSHIFT_RUN_DIR}redis.pid
+#24c24
+#< port 6379
+#---
+#> port 0
+#36,37c35,36
+#< # unixsocket /tmp/redis.sock
+#< # unixsocketperm 755
+#---
+#> unixsocket ${OPENSHIFT_GEAR_DIR}tmp/redis.sock
+#> unixsocketperm 755
+#107c106
+#< dir ./
+#---
+#> dir ${OPENSHIFT_DATA_DIR}redis/data
+
+#EOF
+
   cat <<EOF >${OPENSHIFT_TMP_DIR}redis.conf.patch
 17c17
 < daemonize no
@@ -44,7 +71,7 @@ if [ "$MAKE_IS_DONE" == "yes" ]; then
 24c24
 < port 6379
 ---
-> port 0
+> port 6379
 36,37c35,36
 < # unixsocket /tmp/redis.sock
 < # unixsocketperm 755
@@ -57,6 +84,7 @@ if [ "$MAKE_IS_DONE" == "yes" ]; then
 > dir ${OPENSHIFT_DATA_DIR}redis/data
 
 EOF
+
   patch ${OPENSHIFT_TMP_DIR}redis-${REDIS_VERSION}/redis.conf ${OPENSHIFT_TMP_DIR}redis.conf.patch -o ${OPENSHIFT_DATA_DIR}redis/bin/redis.conf
 fi
 
