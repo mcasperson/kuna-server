@@ -29,10 +29,8 @@ function start() {
 
 		buildAndPopulateTree(doc);
 
-		doc.at().on('child op', function (path, op) {
-			var scrollPos = jQuery('#toc').scrollTop();
+		doc.at().on('child op', function (path, op) {			
 			buildAndPopulateTree(doc);
-			setTimeout(100, function() {jQuery('#toc').scrollTop(scrollPos);});
 		});
 	});
 }
@@ -66,13 +64,22 @@ function buildPath(id, parent, parents) {
 }
 
 function buildAndPopulateTree(doc) {
+	
+	var scrollPos = 0;
+	if (jQuery('#toc').length != 0) {
+		var scrollPos = jQuery('#toc').scrollTop();
+	}
+	
 	buildTree();
 	addChild(jQuery('#tocTopLevel'), doc.get());	
 	buildJSTree(doc);
-	renderBook(doc);	
+	renderBook(doc);
+
+	jQuery('#toc').scrollTop(scrollPos);
 }
 
 function buildTree() {
+
 	jQuery('#toc').remove();
 	var tocElement = jQuery('<div id="toc" style="position: absolute; top: 50; bottom: 0; left: 16; right: 0; overflow-y: auto">');
 	var tocTopLevel = jQuery('<ul id="tocTopLevel">');
