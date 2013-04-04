@@ -10,7 +10,8 @@ function renderedElement(child) {
 		jQuery('#rendered').append(div);
 	} else if (child.type == BookElementEmun.SEContent) {
 		var text = child.seData.body;
-		var user = '<a href="' + child.seData.link + '">Question by</a>: <a href="' + child.seData.owner.link + '">' + child.seData.owner.display_name + '</a>';
+		var questionUser = '<a href="' + child.seData.link + '">Question by</a>: <a href="' + child.seData.owner.link + '">' + child.seData.owner.display_name + '</a>';
+		var answerUser = ""
 		if (child.seData.answers !== undefined) {
 			var accepted_answer_id = child.seData.accepted_answer_id;
 			
@@ -19,7 +20,7 @@ function renderedElement(child) {
 				jQuery.each(child.seData.answers, function(i, answer){
 					if (maxScore === undefined || answer.score > maxScore) {
 						text = answer.body;
-						user += ' <a href="' + child.seData.link + "/#" + answer.answer_id + '">Answer by</a>: <a href="' + answer.owner.link + '">' + answer.owner.display_name + '</a>';
+						answerUser= ' <a href="' + child.seData.link + "/#" + answer.answer_id + '">Answer by</a>: <a href="' + answer.owner.link + '">' + answer.owner.display_name + '</a>';
 						maxScore = answer.score;
 					}
 				});	
@@ -27,7 +28,7 @@ function renderedElement(child) {
 				jQuery.each(child.seData.answers, function(i, answer){
 					if (answer.answer_id == accepted_answer_id) {
 						text = answer.body;
-						user += ' <a href="' +  child.seData.link + "/#" + answer.answer_id + '">Answer by</a>: <a href="' + answer.owner.link + '">' + answer.owner.display_name + '</a>';
+						answerUser= ' <a href="' +  child.seData.link + "/#" + answer.answer_id + '">Answer by</a>: <a href="' + answer.owner.link + '">' + answer.owner.display_name + '</a>';
 						return false;
 					}
 				});	
@@ -38,7 +39,7 @@ function renderedElement(child) {
 			'<div id="rendered' + child.id + '">' +
 				'<h4>' + child.name + '</h4>' +
 				'<div>' + text + '</div>' +
-				'<div style="font-size:small">' + user + '</div>' +
+				'<div style="font-size:small">' + questionUser + answerUser + '</div>' +
 			'<div>');
 		jQuery('#rendered').append(div);
 	}
