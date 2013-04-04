@@ -156,7 +156,7 @@ function buildJSTree(doc, scrollPos) {
 			var newNode = data.rslt.oc;
 			
 			var nodeId = (getMaxNodeId(0, doc.get()) + 1);
-			newNode.id = 'node' + nodeId;
+			newNode[0].id = 'node' + nodeId;
 
 			var childIndex = getChildIndex(newNode[0].parentElement, newNode[0]);			
 			var newTocElement = {id: nodeId, type: BookElementEmun.Chapter, name: newNode.text().trim(), children: []};
