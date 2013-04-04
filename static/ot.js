@@ -153,13 +153,13 @@ function buildJSTree(doc, scrollPos) {
 		*/
 
 		if (sourceNode.parentElement.parentElement == jQuery("#toc-items")[0]) {
-			var newNode = data.rslt.oc[0];
+			var newNode = data.rslt.oc;
 			
 			var nodeId = (getMaxNodeId(0, doc.get()) + 1);
 			newNode.id = 'node' + nodeId;
 
 			var childIndex = getChildIndex(newNode.parentElement, newNode);			
-			var newTocElement = {id: nodeId, type: BookElementEmun.Chapter, name: newNode.innerText.trim(), children: []};
+			var newTocElement = {id: nodeId, type: BookElementEmun.Chapter, name: newNode.text().trim(), children: []};
 
 			var pathDetails = buildPath(parentOfNewNode.id, doc.get(), []);
 
