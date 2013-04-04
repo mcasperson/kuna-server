@@ -14,9 +14,15 @@ function addToStage() {
 		var newNode = jQuery("#toc-staging").jstree("create",-1,false,stageObject.site + " " + stageObject.question,false,true)[0];
 		newNode.data = stageObject;
 		
+		/*
+			Get the details of the question.
+		*/
 		jQuery.getJSON("http://api.stackexchange.com/2.1/questions/" + stageObject.question + "?key=" + sekey + "&site=" + stageObject.site + "&filter=default&callback=", function (data){
 			if (data.items !== undefined) {
-				/* Decode any HTML entities */
+				/* 
+					Decode any HTML entities. Note that you can't drag this node until the title has been set (which 
+					indicates that we have gotten the details from SE.
+				*/
 				stageObject.title =  $('<div/>').html(data.items[0].title).text();
 				jQuery("#toc-staging").jstree('rename_node', newNode , stageObject.title );
 			}

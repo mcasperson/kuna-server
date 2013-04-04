@@ -148,6 +148,7 @@ function buildJSTree(doc) {
 
 			var childIndex = getChildIndex(newNode.parentElement, newNode);			
 			var newTocElement = {id: nodeId, type: BookElementEmun.Chapter, name: newNode.innerText.trim(), children: []};
+			newNode.data = newTocElement;
 
 			var pathDetails = buildPath(parentOfNewNode.id, doc.get(), []);
 
@@ -201,12 +202,15 @@ function buildJSTree(doc) {
 		*/
 	
 		jQuery("#toc").jstree("open_all");
-	}).bind("dblclick.jstree", function (event) {
+	}).bind("dblclick.jstree", function (event, data) {
 		/*
-			Rename on double click
+			Rename chapters on double click
 		*/
-	
-		$("#toc").jstree("rename");
+		var sourceNodeId = $('#toc').jstree('get_selected')[0].id;
+		var sourceTocElement = getTocElement(sourceNodeId, doc.get());
+		if (sourceTocElement.type == BookElementEmun.Chapter) {		
+			$("#toc").jstree("rename");
+		}
 	}).bind("rename_node.jstree", function (event, data) { 			    
 		/*
 			Sync renames with OT server
