@@ -38,7 +38,7 @@ function renderedElement(child) {
 			'<div id="rendered' + child.id + '">' +
 				'<h4>' + child.name + '</h4>' +
 				'<div>' + text + '</div>' +
-				'<div>' + user + '</div>' +
+				'<div style="font-size:small">' + user + '</div>' +
 			'<div>');
 		jQuery('#rendered').append(div);
 	}
