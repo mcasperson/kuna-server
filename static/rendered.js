@@ -6,7 +6,7 @@ function renderBook(doc) {
 
 function renderedElement(child) {
 	if (child.type == BookElementEmun.Chapter) {
-		var div = jQuery('<div id="rendered' + child.id + '"><a href="' + child.seData.link + '"><h3>' + child.name + '</h3></a><div>');
+		var div = jQuery('<div id="rendered' + child.id + '"><a href="' + child.seData.owner.link + '"><h3>' + child.name + '</h3></a><div>');
 		jQuery('#rendered').append(div);
 	} else if (child.type == BookElementEmun.SEContent) {
 		var text = child.seData.body;
