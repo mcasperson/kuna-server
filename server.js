@@ -7,7 +7,8 @@
 	
 	See http://jmesnil.net/weblog/2012/05/02/nodejs-redis-on-openshift/ for details
 	on install redis in openshift. The default redis.conf (as created by the procedure listed on 
-	that blog) will set the port to 0. This	needs to be changed back to 6379.
+	that blog) will set the port to 0. This	needs to be changed to 35500 (see
+	https://www.openshift.com/kb/kb-e1038-i-cant-bind-to-a-port for details on port choices).
 */
 var ShareJS, ShareJSOpts, connect, port, server;
 
