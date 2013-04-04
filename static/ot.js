@@ -255,7 +255,11 @@ function buildJSTree(doc) {
 		subDoc.set(data.rslt.name);
 		
 		renderBook(doc);
-	});
+	}).bind("select_node.jstree", function(event, data){
+            var node = data.rslt.obj[0];
+            var nodeId = node.id.substring('node'.length, node.id.length);
+            jQuery('#rendered' + nodeId)[0].scrollIntoView(); 
+        });
 	
 	/*
 		Watch for the delete key.

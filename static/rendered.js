@@ -6,7 +6,7 @@ function renderBook(doc) {
 
 function renderedElement(child) {
 	if (child.type == BookElementEmun.Chapter) {
-		var div = jQuery('<div><h3>' + child.name + '</h3><div>');
+		var div = jQuery('<div id="rendered' + child.id + '"><h3>' + child.name + '</h3><div>');
 		jQuery('#rendered').append(div);
 	} else if (child.type == BookElementEmun.SEContent) {
 		var text = child.seData.body;
@@ -32,7 +32,7 @@ function renderedElement(child) {
 		}
 		
 		var div = jQuery(
-			'<div>' +
+			'<div id="rendered' + child.id + '">' +
 				'<h4>' + child.name + '</h4>' +
 				'<div>' + text + '</div>' +
 			'<div>');
