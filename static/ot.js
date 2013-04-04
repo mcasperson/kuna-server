@@ -66,7 +66,8 @@ function buildPath(id, parent, parents) {
 function buildAndPopulateTree(doc) {
 	buildTree();
 	addChild(jQuery('#tocTopLevel'), doc.get());	
-	buildJSTree(doc);	
+	buildJSTree(doc);
+	renderBook(doc);	
 }
 
 function buildTree() {
@@ -110,7 +111,11 @@ function buildJSTree(doc) {
 					if (m.np[0].id == 'toc') {
 						return false;	
 					}
-					if (m.np[0].data !== undefined && m.np[0].data.type == BookElementEmun.SEContent && m.np[0].data.title === undefined) {
+					
+					var sourceNodeId = m.np[0].id;
+					var sourceTocElement = getTocElement(sourceNodeId, doc.get());
+					
+					if (sourceTocElement != null && sourceTocElement.type == BookElementEmun.SEContent && sourceTocElement.seData === undefined) {
 						return false;	
 					}
 					
@@ -148,7 +153,6 @@ function buildJSTree(doc) {
 
 			var childIndex = getChildIndex(newNode.parentElement, newNode);			
 			var newTocElement = {id: nodeId, type: BookElementEmun.Chapter, name: newNode.innerText.trim(), children: []};
-			newNode.data = newTocElement;
 
 			var pathDetails = buildPath(parentOfNewNode.id, doc.get(), []);
 
@@ -167,6 +171,23 @@ function buildJSTree(doc) {
 				staging tree, so remove the source node.
 			*/
 			$("#toc-staging").jstree("remove", sourceNode);	
+			
+			var newNode = data.rslt.oc[0];
+			
+			var nodeId = (getMaxNodeId(0, doc.get()) + 1);
+			newNode.id = 'node' + nodeId;
+
+			var childIndex = getChildIndex(newNode.parentElement, newNode);			
+			var newTocElement = sourceNode.data;
+			newTocElement.id = nodeId;
+
+			var pathDetails = buildPath(parentOfNewNode.id, doc.get(), []);
+
+			// notify the OT server
+			pathDetails.push('children');
+			
+			var subDoc = doc.at(pathDetails);
+			subDoc.insert(childIndex, newTocElement);
 		}
 		/*
 			This is a move internally
