@@ -27,6 +27,11 @@ function start() {
 			});
 		} 			
 
+		jQuery('#openBook').click(function() {
+			var newWin = open();
+			newWin.document.write(jQuery('#rendered').html());		
+		});
+		
 		buildAndPopulateTree(doc);
 
 		doc.at().on('child op', function (path, op) {			
@@ -345,3 +350,5 @@ function getMaxNodeId(maxID, toc) {
 	
 	return maxID;
 }
+
+
