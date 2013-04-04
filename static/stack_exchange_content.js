@@ -10,7 +10,14 @@ function addToStage() {
 		stageObject.site =  parts.hostname;
 		stageObject.question = parts.questionId;
 
-		var newNode = $("#toc-staging").jstree("create",-1,false,stageObject.site + " " + stageObject.question,false,true)[0];
+		var newNode = jQuery("#toc-staging").jstree("create",-1,false,stageObject.site + " " + stageObject.question,false,true)[0];
 		newNode.data = stageObject;
+		
+		jQuery.getJSON("http://api.stackexchange.com/2.1/questions/" + stageObject.question + "?key=" + sekey + "&site=" + stageObject.site + "&filter=default&callback=", function (data){
+			if (data.items !== undefined) {
+				stageObject.title =  $('<div/>').html(data.items[0].title).text();
+				jQuery("#toc-staging").jstree('rename_node', newNode , stageObject.title );
+			}
+		});
 	}
 }

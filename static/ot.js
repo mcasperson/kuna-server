@@ -154,6 +154,10 @@ function buildJSTree(doc) {
 			This is a content node from the staging area
 		*/
 		else if (sourceNode.parentElement.parentElement == jQuery("#toc-staging")[0]) {
+			/*
+				We copy by default, but we actually want to move from the
+				staging tree, so remove the source node.
+			*/
 			$("#toc-staging").jstree("remove", sourceNode);	
 		}
 		/*
