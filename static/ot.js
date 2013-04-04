@@ -67,7 +67,7 @@ function buildAndPopulateTree(doc) {
 	
 	var scrollPos = 0;
 	if (jQuery('#toc').length != 0) {
-		var scrollPos = jQuery('#toc').scrollTop();
+		scrollPos = jQuery('#toc').scrollTop();
 	}
 	
 	buildTree();
@@ -232,8 +232,9 @@ function buildJSTree(doc) {
 		/*
 			Open the tree when it is loaded
 		*/
-	
+		scrollPos = jQuery('#toc').scrollTop();
 		jQuery("#toc").jstree("open_all");
+		jQuery('#toc').scrollTop(scrollPos);
 	}).bind("dblclick.jstree", function (event, data) {
 		/*
 			Rename chapters on double click
