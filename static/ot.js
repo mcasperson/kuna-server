@@ -72,10 +72,8 @@ function buildAndPopulateTree(doc) {
 	
 	buildTree();
 	addChild(jQuery('#tocTopLevel'), doc.get());	
-	buildJSTree(doc);
+	buildJSTree(doc, scrollPos);
 	renderBook(doc);
-
-	jQuery('#toc').scrollTop(scrollPos);
 }
 
 function buildTree() {
@@ -231,8 +229,7 @@ function buildJSTree(doc) {
 	}).bind("loaded.jstree", function (event, data) {
 		/*
 			Open the tree when it is loaded
-		*/
-		scrollPos = jQuery('#toc').scrollTop();
+		*/		
 		jQuery("#toc").jstree("open_all");
 		jQuery('#toc').scrollTop(scrollPos);
 	}).bind("dblclick.jstree", function (event, data) {
