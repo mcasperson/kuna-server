@@ -268,6 +268,8 @@ function buildJSTree(doc, scrollPos) {
 					pathDetails.pop();
 					pathDetails.push('name');
 					subDoc.set(questionTitle);
+					
+					renderBook(doc);
 				}
 			});
 		}
