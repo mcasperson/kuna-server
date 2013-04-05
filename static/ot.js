@@ -327,7 +327,7 @@ function buildJSTree(doc, scrollPos) {
 					
 					$("#toc").jstree("remove", tocElement);
 				}
-			});
+			};
 
 			renderBook(doc);
 		}
