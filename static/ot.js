@@ -137,8 +137,8 @@ function buildJSTree(doc, scrollPos) {
 				}
 			}				
 		},
-		ui: {
-			select_prev_on_delete: false
+		"ui": {
+			"select_prev_on_delete": false
 		}
 		plugins : [ "themes", "html_data", "crrm", "dnd", "ui"]
 	}).bind('move_node.jstree',function(event,data){
