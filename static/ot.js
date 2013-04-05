@@ -299,7 +299,11 @@ function buildJSTree(doc, scrollPos) {
 	}).bind("select_node.jstree", function(event, data){
             var node = data.rslt.obj[0];
             var nodeId = node.id.substring('node'.length, node.id.length);
-            jQuery('#rendered' + nodeId)[0].scrollIntoView(); 
+            
+            var selectedId = jQuery('#rendered' + nodeId);
+            if (selectedId.length != 0) {
+            	    selectedId[0].scrollIntoView();
+            }
         });
 	
 	/*
@@ -308,7 +312,8 @@ function buildJSTree(doc, scrollPos) {
 	jQuery(document).keydown(function (event) { 
 		if (event.keyCode == '46') {
 			
-			jQuery.each(jQuery('#toc').jstree('get_selected'), function(i, tocElement) {				
+			var selected = jQuery('#toc').jstree('get_selected');
+			jQuery.each(selected, function(i, tocElement) {				
 				/* Don't delete the book folder */
 				if (tocElement.id != 'node0') {
 					// get a path that describes the  object that changed
