@@ -241,10 +241,35 @@ function buildJSTree(doc, scrollPos) {
 		/*
 			Rename chapters on double click
 		*/
-		var sourceNodeId = $('#toc').jstree('get_selected')[0].id;
+		var sourceNode = $('#toc').jstree('get_selected');
+		var sourceNodeId = sourceNode[0].id;
 		var sourceTocElement = getTocElement(sourceNodeId, doc.get());
 		if (sourceTocElement.type == BookElementEmun.Chapter) {		
 			$("#toc").jstree("rename");
+		} else if (sourceTocElement.type == BookElementEmun.SEContent) {		
+			/*
+				Get the details of the question.
+			*/
+			jQuery.getJSON("http://api.stackexchange.com/2.1/questions/" + sourceTocElement.question + "?key=" + sekey + "&site=" + sourceTocElement.site + "&filter=!)65UbsXJgkqyBTkd)y3_nYUQl-No&callback=", function (data){
+				if (data.items !== undefined && data.items.length > 0) {
+					/* 
+						Decode any HTML entities. Note that you can't drag this node until the title has been set (which 
+						indicates that we have gotten the details from SE.
+					*/
+					var questionTitle =  jQuery('<div/>').html(data.items[0].title).text();				
+					jQuery("#toc-staging").jstree('rename_node', sourceNode , questionTitle );
+					
+					var pathDetails = buildPath(node.parentElement.parentElement.id, doc.get(), []);
+					pathDetails.push('seData');
+					
+					var subDoc = doc.at(pathDetails);
+					subDoc.set(data.items[0]);
+					
+					pathDetails.pop();
+					pathDetails.push('name');
+					subDoc.set(questionTitle);
+				}
+			});
 		}
 		
 		renderBook(doc);
