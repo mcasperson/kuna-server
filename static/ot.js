@@ -5,6 +5,8 @@ BookElementEmun = {
 	SEContent: 3
 };
 
+lastKeyEvent = null;
+
 function start() {
 	// connect to the server
 	sharejs.open('book12', 'json', function(error, doc) {
@@ -135,6 +137,9 @@ function buildJSTree(doc, scrollPos) {
 				}
 			}				
 		},
+		ui: {
+			select_prev_on_delete: false
+		}
 		plugins : [ "themes", "html_data", "crrm", "dnd", "ui"]
 	}).bind('move_node.jstree',function(event,data){
 
@@ -310,11 +315,15 @@ function buildJSTree(doc, scrollPos) {
 		Watch for the delete key.
 	*/
 	jQuery(document).keydown(function (event) { 
+		if (lastKeyEvent == event) {
+			return;
+		}
+		
+		lastKeyEvent = event;
+			
 		if (event.keyCode == '46') {
 			
-			var selected = jQuery('#toc').jstree('get_selected');
-			for (var i = 0; i < selected.length; ++i) {		
-				tocElement = selected[i];					
+			jQuery.each(jQuery('#toc').jstree('get_selected'), function(i, tocElement) {				
 				/* Don't delete the book folder */
 				if (tocElement.id != 'node0') {
 					// get a path that describes the  object that changed
@@ -327,7 +336,7 @@ function buildJSTree(doc, scrollPos) {
 					
 					$("#toc").jstree("remove", tocElement);
 				}
-			};
+			});
 
 			renderBook(doc);
 		}
