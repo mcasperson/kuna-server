@@ -259,7 +259,7 @@ function buildJSTree(doc, scrollPos) {
 					var questionTitle =  jQuery('<div/>').html(data.items[0].title).text();				
 					jQuery("#toc-staging").jstree('rename_node', sourceNode , questionTitle );
 					
-					var pathDetails = buildPath(node.parentElement.parentElement.id, doc.get(), []);
+					var pathDetails = buildPath(sourceTocElement.id, doc.get(), []);
 					pathDetails.push('seData');
 					
 					var subDoc = doc.at(pathDetails);
