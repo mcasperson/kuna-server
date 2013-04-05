@@ -313,7 +313,8 @@ function buildJSTree(doc, scrollPos) {
 		if (event.keyCode == '46') {
 			
 			var selected = jQuery('#toc').jstree('get_selected');
-			jQuery.each(selected, function(i, tocElement) {				
+			for (var i = 0; i < selected.length; ++i) {		
+				tocElement = selected[i];					
 				/* Don't delete the book folder */
 				if (tocElement.id != 'node0') {
 					// get a path that describes the  object that changed
