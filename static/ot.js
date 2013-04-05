@@ -5,8 +5,6 @@ BookElementEmun = {
 	SEContent: 3
 };
 
-lastKeyEvent = null;
-
 function start() {
 	// connect to the server
 	sharejs.open('book12', 'json', function(error, doc) {
@@ -315,12 +313,6 @@ function buildJSTree(doc, scrollPos) {
 		Watch for the delete key.
 	*/
 	jQuery(document).keydown(function (event) { 
-		if (lastKeyEvent == event) {
-			return;
-		}
-		
-		lastKeyEvent = event;
-			
 		if (event.keyCode == '46') {
 			
 			jQuery.each(jQuery('#toc').jstree('get_selected'), function(i, tocElement) {				
