@@ -206,19 +206,21 @@ function buildJSTree(doc, scrollPos) {
 		*/				
 		else if (jQuery(sourceNode).closest(jQuery("#toc").length > 0)) {
 			
-			var referenceNode = data.rslt.o[0];
-		
-			// remove source node from old parent
-			var pathDetails = buildPath(referenceNode.id, doc.get(), []);
-			var subDoc = doc.at(pathDetails);
-			var subDocToc = subDoc.get();
-			subDoc.remove();
-
-			// add source node to new parent
-			var newPathDetails = buildPath(parentOfNewNode.id, doc.get(), []);
-			newPathDetails.push('children');					
-			var newSubDoc = doc.at(newPathDetails);
-			newSubDoc.insert(data.rslt.cp, subDocToc);
+			for (var i = 0; i < data.rslt.o.length; ++i) {
+				var referenceNode = data.rslt.o[i];
+			
+				// remove source node from old parent
+				var pathDetails = buildPath(referenceNode.id, doc.get(), []);
+				var subDoc = doc.at(pathDetails);
+				var subDocToc = subDoc.get();
+				subDoc.remove();
+	
+				// add source node to new parent
+				var newPathDetails = buildPath(parentOfNewNode.id, doc.get(), []);
+				newPathDetails.push('children');					
+				var newSubDoc = doc.at(newPathDetails);
+				newSubDoc.insert(data.rslt.cp, subDocToc);
+			}
 		}
 		
 		renderBook(doc);
